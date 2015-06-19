@@ -187,7 +187,19 @@ for child in children[1:]:
     """
     on_notice_to = ""
 
-    print da
-    scraperwiki.sqlite.save(unique_keys=['council_reference'], data=da)
+    # If this is our first run, the database won't exist yet.
+    # So wrap in a try block.
+    try:
+        already_exists = scraperwiki.sqlite.select(
+            "* FROM data WHERE council_reference=?", [da['council_reference']]
+        )
+    except:
+        already_exists = False
 
-
+    if already_exists:
+        print "Skipping: {}".format(da['council_reference'])
+    else:
+        print "Saving: {}".format(da['council_reference'])
+        scraperwiki.sqlite.save(
+            unique_keys=['council_reference'], data=da, table_name="data"
+        )
