@@ -2,6 +2,9 @@
 from bs4 import BeautifulSoup
 # Submitting forms
 from selenium import webdriver
+from selenium.webdriver.common.by import By
+from selenium.webdriver.support.ui import WebDriverWait
+from selenium.webdriver.support import expected_conditions
 # To format date in the required format
 import datetime
 # To parse a string into a date
@@ -10,13 +13,41 @@ import dateutil.parser
 from urlparse import urljoin
 # To write to SQLite database
 import scraperwiki
-# To sleep
-import time
+# Ensure our cleanup gets called
+import atexit
+import os
+
 
 # Consts
 url = "http://datracker.portstephens.nsw.gov.au/"
 
-driver = webdriver.Firefox()
+driver = webdriver.PhantomJS()
+
+# Make sure selenium doesn't give up
+# if it queries the dom before the ajax has landed
+driver.implicitly_wait(10)
+
+# Create our standard waitable...
+wait = WebDriverWait(driver, 5)
+
+# Make sure the browser process is shutdown when we exit,
+# whether we die from an error later or not.
+@atexit.register
+def shutdown_browser():
+    try:
+        # Close the driver process
+        driver.quit()
+
+        # nuke the service... die, die, die!
+        # For some reason, the PhantomJS driver doesn't manage
+        # to shutdown its service process. :( We're going to force
+        # it ourselves, so zombie phantoms don't haunt all our memory.
+        # From the code, it seems that it should, but sounds like
+        # it's a common issue with phantomjs. Best we can do for now
+        # is bring down the hammer...
+        os.system("killall phantomjs")
+    except Exception, err:
+        print("Failed to kill client browser: " + str(err))
 
 # Get the first page with agreement.
 driver.get(url)
@@ -157,6 +188,4 @@ for child in children[1:]:
     print da
     scraperwiki.sqlite.save(unique_keys=['council_reference'], data=da)
 
-# Shutdown our browser. Don't want any orphaned browsers haunting
-# the system... They don't get killed automatically when we exit.
-driver.quit()
+
