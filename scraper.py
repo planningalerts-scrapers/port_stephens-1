@@ -27,6 +27,10 @@ driver.add_cookie({"name": "User", "value": "accessAllowed-MasterView=True"})
 # Refresh the page.
 driver.refresh()
 
+# Ensure all columns are visible. The jquery responsive datatables in use have
+# the "feature" of removing columns, when the window is too narrow.
+driver.set_window_size(1200, 600)
+
 # Find the first "This Week" link. That is "Applications Submitted".
 this_week_link = driver.find_elements_by_link_text("This Week")[0]
 this_week_link.click()
