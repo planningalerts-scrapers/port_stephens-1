@@ -12,12 +12,24 @@ import dateutil.parser
 # To convert relative URLs into absolute URLs
 from urlparse import urljoin
 # To write to SQLite database
-import scraperwiki
+import sqlite3
 # Ensure our cleanup gets called
 import atexit
-import os
 
-os.environ['SCRAPERWIKI_DATABASE_NAME'] = 'sqlite:///data.sqlite'
+# For some reason, scraperwiki wasn't saving to file. Trying plain ol' sqlite3
+database = sqlite3.connect('data.sqlite')
+with database:
+    database.execute("""
+        CREATE TABLE IF NOT EXISTS data (
+            council_reference text unique primary key,
+            address text,
+            description text,
+            info_url text,
+            comment_url text,
+            date_scraped text,
+            date_received text
+        )
+    """)
 
 # Consts
 url = "http://datracker.portstephens.nsw.gov.au/"
@@ -181,17 +193,25 @@ for child in children[1:]:
 
     # If this is our first run, the database won't exist yet.
     # So wrap in a try block.
-    try:
-        already_exists = scraperwiki.sql.select(
-            "* FROM data WHERE council_reference=?", [da['council_reference']]
-        )
-    except:
-        already_exists = False
 
-    if already_exists:
-        print "Skipping: {}".format(da['council_reference'])
-    else:
-        print "Saving: {}".format(da['council_reference'])
-        scraperwiki.sql.save(
-            unique_keys=['council_reference'], data=da, table_name="data"
+    cursor = database.cursor()
+    exists = cursor.execute(
+        "SELECT * FROM data WHERE council_reference=?", (da['council_reference'],)
+    ).fetchone()
+
+    fields = da.keys()
+    placeholders = ','.join(['?'] * len(fields))
+
+    if not exists:
+        print("Saving: " + da['council_reference'])
+        cursor.execute("""
+            INSERT INTO data ({fields}) VALUES ({placeholders})
+        """.format(
+            fields=",".join(fields),
+            placeholders=placeholders
+        ),
+            tuple(da[field] for field in fields)
         )
+        database.commit()
+    else:
+        print("Skipping: " + da['council_reference'])
