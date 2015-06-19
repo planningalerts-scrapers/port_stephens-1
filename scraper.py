@@ -38,15 +38,6 @@ def shutdown_browser():
     try:
         # Close the driver process
         driver.quit()
-
-        # nuke the service... die, die, die!
-        # For some reason, the PhantomJS driver doesn't manage
-        # to shutdown its service process. :( We're going to force
-        # it ourselves, so zombie phantoms don't haunt all our memory.
-        # From the code, it seems that it should, but sounds like
-        # it's a common issue with phantomjs. Best we can do for now
-        # is bring down the hammer...
-        os.system("killall phantomjs")
     except Exception, err:
         print("Failed to kill client browser: " + str(err))
 
