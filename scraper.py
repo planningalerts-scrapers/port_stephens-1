@@ -52,15 +52,15 @@ def shutdown_browser():
 # Get the first page with agreement.
 driver.get(url)
 
-# Set the cookie to skip the agreement.
-driver.add_cookie({"name": "User", "value": "accessAllowed-MasterView=True"})
-
-# Refresh the page.
-driver.refresh()
-
 # Ensure all columns are visible. The jquery responsive datatables in use have
 # the "feature" of removing columns, when the window is too narrow.
-driver.set_window_size(1200, 600)
+driver.set_window_size(1280, 1024)
+
+# Set the cookie to skip the agreement.
+agree_button = wait.until(
+    expected_conditions.presence_of_element_located((By.ID, "agree"))
+)
+agree_button.click()
 
 # Find the first "This Week" link. That is "Applications Submitted".
 this_week_link = driver.find_elements_by_link_text("This Week")[0]
