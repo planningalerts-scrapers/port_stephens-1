@@ -66,15 +66,17 @@ agree_button.click()
 this_week_link = driver.find_elements_by_link_text("This Week")[0]
 this_week_link.click()
 
-# Wait 5 seconds to ensure all is loaded.
-time.sleep(5)
-
+# Wait to ensure all is loaded.
 # Find the "Records per page" selector and select the last value (100).
-records_per_page = driver.find_elements_by_name("applicationsTable_length")[0]
+records_per_page = wait.until(
+    expected_conditions.presence_of_element_located((By.ID, "applicationsTable_length"))
+)
 records_per_page.find_elements_by_tag_name("option")[-1].click()
 
-# Wait 5 seconds to ensure all is loaded.
-time.sleep(5)
+# Wait to ensure all is loaded.
+# Just looking for the "Loading..." popup to appear & vanish.
+wait.until(expected_conditions.visibility_of_element_located((By.ID, "applicationsTable_processing")))
+wait.until(expected_conditions.invisibility_of_element_located((By.ID, "applicationsTable_processing")))
 
 bsd = BeautifulSoup(driver.page_source)
 
