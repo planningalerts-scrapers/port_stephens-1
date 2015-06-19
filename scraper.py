@@ -156,3 +156,7 @@ for child in children[1:]:
 
     print da
     scraperwiki.sqlite.save(unique_keys=['council_reference'], data=da)
+
+# Shutdown our browser. Don't want any orphaned browsers haunting
+# the system... They don't get killed automatically when we exit.
+driver.quit()
