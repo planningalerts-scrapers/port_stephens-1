@@ -191,9 +191,7 @@ for child in children[1:]:
     """
     on_notice_to = ""
 
-    # If this is our first run, the database won't exist yet.
-    # So wrap in a try block.
-
+    # Save the record to our database
     cursor = database.cursor()
     exists = cursor.execute(
         "SELECT * FROM data WHERE council_reference=?", (da['council_reference'],)
