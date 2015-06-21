@@ -54,9 +54,9 @@ agree_button = wait.until(
 )
 agree_button.click()
 
-# Find the first "This Week" link. That is "Applications Submitted".
-this_week_link = driver.find_elements_by_link_text("This Week")[0]
-this_week_link.click()
+# Find the first "This Month" link. That is "Applications Submitted".
+this_month_link = driver.find_elements_by_link_text("This Month")[0]
+this_month_link.click()
 
 # Wait to ensure all is loaded.
 # Find the "Records per page" selector and select the last value (100).
