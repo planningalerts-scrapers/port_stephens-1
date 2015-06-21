@@ -17,8 +17,6 @@ import scraperwiki
 import atexit
 import os
 
-os.environ['SCRAPERWIKI_DATABASE_NAME'] = 'sqlite:///data.sqlite'
-
 # Consts
 url = "http://datracker.portstephens.nsw.gov.au/"
 
