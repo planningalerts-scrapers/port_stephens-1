@@ -15,7 +15,6 @@ from urlparse import urljoin
 import scraperwiki
 # Ensure our cleanup gets called
 import atexit
-import os
 
 # Consts
 url = "http://datracker.portstephens.nsw.gov.au/"
