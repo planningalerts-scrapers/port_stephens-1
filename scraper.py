@@ -27,7 +27,8 @@ driver = webdriver.PhantomJS()
 driver.implicitly_wait(10)
 
 # Create our standard waitable...
-wait = WebDriverWait(driver, 5)
+# At most, wait 30 seconds before exploding with a Timeout exception.
+wait = WebDriverWait(driver, 30)
 
 # Make sure the browser process is shutdown when we exit,
 # whether we die from an error later or not.
